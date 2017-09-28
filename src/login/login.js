@@ -1,6 +1,7 @@
 import React from "react";
 import "./login.css";
 import {auth} from "firebase";
+import * as Firebase from "firebase";
 import firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
 import {Button} from "material-ui";
@@ -19,14 +20,13 @@ var uiConfig = {
 
 export default class Login extends React.Component {
 
-
   constructor (props) {
     super(props);
     this.state = {
       loginStatus: null,
       loggedIn: false
     };
-
+    this.db = Firebase.database();
     this.logOut = this.logOut.bind(this);
   }
 
@@ -37,16 +37,29 @@ export default class Login extends React.Component {
     ui.start('#firebaseui-auth-container', uiConfig);
 
     auth().onAuthStateChanged((user) => {
-      if(user) {
-        this.setState({
-          loggedIn: true
-        });
+      if (user) {
+        this.db.ref('users/' + user.uid).once('value', this.doesUserExist(user));
       } else {
-        this.setState({
-          loginStatus: false
-        });
+        this.setState({ loginStatus: false });
       }
     });
+  }
+
+  doesUserExist(user) {
+    return (response) => {
+      if (!response.val()) {
+        this.db.ref('users/' + user.uid).set(this.formatUser(user));
+      }
+      this.setState({ loggedIn: true });
+    }
+  }
+
+  formatUser(user) {
+    return {
+      displayName: user.displayName,
+      email: user.email,
+      photoUrl : user.photoURL
+    };
   }
 
   logOut() {
