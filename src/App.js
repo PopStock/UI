@@ -8,8 +8,6 @@ import {
   Link
 } from 'react-router-dom'
 import List, { ListItem, ListItemText } from 'material-ui/List';
-
-import Login from "./login/login"
 import StockListPage from "./stock/StockListPage"
 
 class App extends Component {
