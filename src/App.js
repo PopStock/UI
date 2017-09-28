@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Login from "./login/login"
+import AddStock from "./addStock/addStock"
 import {
   BrowserRouter as Router,
   Route,
@@ -16,8 +17,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">PopStock</h1>
+          <h1 className="App-title">Pop Stock</h1>
         </header>
         <Router>
           <div>
@@ -31,12 +31,16 @@ class App extends Component {
                 <Link to="/login">
                   <ListItemText primary="Login"/>
                 </Link>
+                <Link to="/addStock">
+                  <ListItemText primary="List a Stock"/>
+                </Link>
               </ListItem>
             </List>
             <hr/>
 
             <Route path="/login" component={Login}/>
             <Route exact path="/" component={StockListPage}/>
+            <Route path="/addStock" component={AddStock}/>
           </div>
         </Router>
       </div>

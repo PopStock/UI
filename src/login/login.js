@@ -1,7 +1,6 @@
 import React from "react";
 import "./login.css";
-import {auth} from "firebase";
-import * as Firebase from "firebase";
+import {auth, database} from "firebase";
 import firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
 import {Button} from "material-ui";
@@ -25,17 +24,18 @@ export default class Login extends React.Component {
     this.state = {
       loggedIn: false
     };
-    this.db = Firebase.database();
+    this.db = database();
+    this.auth = auth();
     this.logOut = this.logOut.bind(this);
   }
 
   componentDidMount() {
     // Initialize the FirebaseUI Widget using Firebase.
-    this.ui = new firebaseui.auth.AuthUI(auth());
+    this.ui = new firebaseui.auth.AuthUI(this.auth);
     // The start method will wait until the DOM is loaded.
     this.ui.start('#firebaseui-auth-container', uiConfig);
 
-    auth().onAuthStateChanged((user) => {
+    this.auth.onAuthStateChanged((user) => {
       if (user) {
         this.db.ref('users/' + user.uid).once('value', this.doesUserExist(user));
         this.setState({ loggedIn: true });
@@ -65,7 +65,7 @@ export default class Login extends React.Component {
   }
 
   logOut() {
-    auth().signOut().then(() => {
+    this.auth.signOut().then(() => {
       this.setState({ loggedIn: false });
     })
   }
@@ -73,7 +73,6 @@ export default class Login extends React.Component {
   render() {
     return (
       <div>
-      <h1>Status: {this.state.loggedIn.toString()}</h1>
         <div className={this.state.loggedIn ? "" : "hidden"}>
           <Button onClick={this.logOut} raised={true}>Log Out</Button>
         </div>
