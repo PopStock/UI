@@ -20,6 +20,7 @@ var uiConfig = {
 export default class Login extends React.Component {
 
 
+  ui;
   constructor (props) {
     super(props);
     this.state = {
@@ -32,9 +33,9 @@ export default class Login extends React.Component {
 
   componentDidMount() {
     // Initialize the FirebaseUI Widget using Firebase.
-    let ui = new firebaseui.auth.AuthUI(auth());
+    this.ui = new firebaseui.auth.AuthUI(auth());
     // The start method will wait until the DOM is loaded.
-    ui.start('#firebaseui-auth-container', uiConfig);
+    this.ui.start('#firebaseui-auth-container', uiConfig);
 
     auth().onAuthStateChanged((user) => {
       if(user) {
@@ -43,10 +44,14 @@ export default class Login extends React.Component {
         });
       } else {
         this.setState({
-          loginStatus: false
+          loggedIn: false
         });
       }
     });
+  }
+
+  componentWillUnmount() {
+    this.ui.delete();
   }
 
   logOut() {
