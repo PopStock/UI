@@ -23,7 +23,6 @@ export default class Login extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      loginStatus: null,
       loggedIn: false
     };
     this.db = Firebase.database();
@@ -39,8 +38,9 @@ export default class Login extends React.Component {
     auth().onAuthStateChanged((user) => {
       if (user) {
         this.db.ref('users/' + user.uid).once('value', this.doesUserExist(user));
+        this.setState({ loggedIn: true });
       } else {
-        this.setState({ loginStatus: false });
+        this.setState({ loggedIn: false });
       }
     });
   }
@@ -50,7 +50,6 @@ export default class Login extends React.Component {
       if (!response.val()) {
         this.db.ref('users/' + user.uid).set(this.formatUser(user));
       }
-      this.setState({ loggedIn: true });
     }
   }
 
@@ -64,9 +63,7 @@ export default class Login extends React.Component {
 
   logOut() {
     auth().signOut().then(() => {
-      this.setState({
-        loggedIn: false
-      });
+      this.setState({ loggedIn: false });
     })
   }
 
